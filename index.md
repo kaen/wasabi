@@ -2,7 +2,7 @@
 layout: guide
 title: Wasabi
 ---
-Welcome to Wasabi, the simple then powerful game/simulation networking library for Node.js and browsers!
+Welcome to Wasabi, the simple then powerful game/simulation networking library for Node.js and browsers.
 
 You might be interested in the [API Docs]({{ site.baseurl }}/doc/), the [introduction]({{ site.baseurl }}/guide/introduction.html), or [getting started]({{ site.baseurl }}/guide/getting-started.html).
 
