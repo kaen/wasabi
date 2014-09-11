@@ -45,7 +45,7 @@ task('build', function () {
 
         // write the browserified and minified source
         filename = path.join('build', 'wasabi_browser_min.js');
-        result = UglifyJS.minify(src, {fromString: true});
+        result = UglifyJS.minify(src.toString(), {fromString: true});
         fs.writeFileSync(filename, result.code);
         console.log('Wrote to ' + filename + '. Size: ' + result.code.length);
     });
