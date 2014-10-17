@@ -96,6 +96,24 @@ InDescription.prototype = {
         this._bitStream.writeFloat(this._target[name], bits);
     },
 
+
+    /**
+     * Describe a normalized float on the range [min, max].
+     *
+     * **Values will be clamped to this range**.
+     *
+     * @param {String} name The name of the attribute
+     * @param {Number} min The minimum value of the range
+     * @param {Number} max The maximum value of the range
+     * @param {Number} bits The number of bits to use when encoding, including
+     *     the sign bit
+     * @method rangedFloat
+     */
+    rangedFloat: function(name, min, max, bits) {
+        var clampedValue = Math.max(Math.min(this._target[name], max), min);
+        this._bitStream.writeFloat((clampedValue - min) / (max - min), bits);
+    },
+
     /**
      * Describe a string of 8-bit characters
      *
