@@ -178,7 +178,7 @@ InDescription.prototype = {
      * **Note:** unlike `object`, `reference` *does* support cyclical references
      *
      * @param {String} name The name of the attribute
-     * @method object
+     * @method reference
      */
     reference: function (name) {
         // Just write the serial number
