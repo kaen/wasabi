@@ -47,6 +47,11 @@ task('build', function () {
         filename = path.join('build', 'wasabi_browser_min.js');
         result = UglifyJS.minify(src.toString(), {fromString: true});
         fs.writeFileSync(filename, result.code);
+
+        // write the browserified debug source
+        filename = path.join('build', 'wasabi_browser_dbg.js');
+        fs.writeFileSync(filename, src.toString().replace(/\/\/dbg/g, ''));
+
         console.log('Wrote to ' + filename + '. Size: ' + result.code.length);
     });
 });
