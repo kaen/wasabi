@@ -229,102 +229,114 @@ describe('Wasabi', function () {
         wc1.processConnections();
     });
 
-    it('encodes references', function (done) {
-        var obj;
-        var remoteObj;
-        var oldRemoteReference;
-        var group;
+    describe('', function () {
+      it('encodes references', function (done) {
+          var obj;
+          var remoteObj;
+          var oldRemoteReference;
+          var group;
 
-        ws.removeClient(client2);
+          ws.removeClient(client2);
 
-        /**
-         * Contains two references to the same Foo instance
-         */
-        function SubreferenceEncodingTestClass() {
-            this._dummy = true;
-        }
+          /**
+           * Contains two references to the same Foo instance
+           */
+          function SubreferenceEncodingTestClass() {
+              this._dummy = true;
+          }
 
-        SubreferenceEncodingTestClass.prototype.init = function () {
-            // two references to the same managed object
-            this.fooReference1 = new MockWasabi.Foo();
-            this.fooReference2 = this.fooReference1;
-            ws.addObject(this.fooReference1);
-        };
+          SubreferenceEncodingTestClass.prototype.init = function () {
+              // two references to the same managed object
+              this.fooReference1 = new MockWasabi.Foo();
+              this.fooReference2 = this.fooReference1;
+  
+              // Notice that addObject is not called on fooReference1
+              // Wasabi should detect that the object has not been added, but
+              // is an instance of a managed type, and automatically add the
+              // object before packing it
+          };
 
-        SubreferenceEncodingTestClass.prototype.serialize = function (desc) {
-            desc.reference('fooReference1');
-            desc.reference('fooReference2');
-        };
+          SubreferenceEncodingTestClass.prototype.serialize = function (desc) {
+              desc.reference('fooReference1');
+              desc.reference('fooReference2');
+          };
 
-        /**
-         * Contains a reference to an instance of SubreferenceEncodingTestClass
-         */
-        function ReferenceEncodingTestClass() {
-            this._dummy = true;
-        }
+          /**
+           * Contains a reference to an instance of SubreferenceEncodingTestClass
+           */
+          function ReferenceEncodingTestClass() {
+              this._dummy = true;
+          }
 
-        ReferenceEncodingTestClass.prototype.init = function () {
-            // reference to a managed object
-            this.topReference = new SubreferenceEncodingTestClass();
-            this.topReference.init();
-            ws.addObject(this.topReference);
-        };
+          ReferenceEncodingTestClass.prototype.init = function () {
+              // reference to a managed object
+              this.topReference = new SubreferenceEncodingTestClass();
+              this.topReference.init();
+              ws.addObject(this.topReference);
+          };
 
-        ReferenceEncodingTestClass.prototype.serialize = function (desc) {
-            desc.reference('topReference');
-        };
+          ReferenceEncodingTestClass.prototype.serialize = function (desc) {
+              desc.reference('topReference');
+          };
 
-        ReferenceEncodingTestClass.prototype.rpcTest = function (that) {
-            assert.deepEqual(this, that);
-            done();
-        };
+          ReferenceEncodingTestClass.prototype.rpcTest = function (that) {
+              assert.deepEqual(this, that);
+              done();
+          };
 
-        // add our one-off test classes
-        ws.addClass(ReferenceEncodingTestClass);
-        wc1.addClass(ReferenceEncodingTestClass);
-        ws.addClass(SubreferenceEncodingTestClass);
-        wc1.addClass(SubreferenceEncodingTestClass);
+          // add our one-off test classes
+          ws.addClass(ReferenceEncodingTestClass);
+          wc1.addClass(ReferenceEncodingTestClass);
+          ws.addClass(SubreferenceEncodingTestClass);
+          wc1.addClass(SubreferenceEncodingTestClass);
 
-        // create an instance of the container class
-        obj = new ReferenceEncodingTestClass();
-        obj.init();
-        ws.addObject(obj);
+          // create an instance of the container class
+          obj = new ReferenceEncodingTestClass();
+          obj.init();
+          ws.addObject(obj);
 
-        // set visibility groups so that the ReferenceEncodingTestClass and Foo
-        // objects is ghosted but, the SubreferenceEncodingTestClass instance
-        // inside of the ReferenceEncodingTestClass instance is not.
-        //
-        // Wasabi should realize that this is happening, and add a ghost of the
-        // object implicitly.
-        group = ws.createGroup();
-        group.addObject(obj);
-        group.addObject(obj.topReference.fooReference1);
-        clientConn1.addGroup(group);
+          // set visibility groups so that the ReferenceEncodingTestClass and Foo
+          // objects is ghosted but, the SubreferenceEncodingTestClass instance
+          // inside of the ReferenceEncodingTestClass instance is not.
+          //
+          // Wasabi should realize that this is happening, and add a ghost of the
+          // object implicitly.
+          group = ws.createGroup();
+          group.addObject(obj);
+          //group.addObject(obj.topReference.fooReference1);
+          clientConn1.addGroup(group);
 
-        ws.processConnections();
-        wc1.processConnections();
+          obj.topReference.fooReference1._thisValueIsNotReplicated = true;
 
-        remoteObj = wc1.registry.getObject(obj.wsbSerialNumber);
+          ws.processConnections();
+          wc1.processConnections();
 
-        // the objects should all be deep equal
-        obj.topReference.fooReference1.check(remoteObj.topReference.fooReference1);
+          remoteObj = wc1.registry.getObject(obj.wsbSerialNumber);
 
-        oldRemoteReference = remoteObj.topReference;
+          // the objects should all be deep equal
+          obj.topReference.fooReference1.check(remoteObj.topReference.fooReference1);
+          assert.strictEqual(obj.topReference.fooReference1.wsbSerialNumber, remoteObj.topReference.fooReference1.wsbSerialNumber);
+          assert.notEqual(obj.topReference.fooReference1.wsbSerialNumber, undefined);
 
-        // process again
-        ws.processConnections();
-        wc1.processConnections();
+          console.log(remoteObj.topReference.fooReference1);
 
-        remoteObj = wc1.registry.getObject(obj.wsbSerialNumber);
+          oldRemoteReference = remoteObj.topReference;
 
-        // should reuse the reference object
-        assert.strictEqual(oldRemoteReference, remoteObj.topReference);
+          // process again
+          ws.processConnections();
+          wc1.processConnections();
 
-        // should allow passing objects like this as default rpc arguments
-        obj.rpcTest(obj);
+          remoteObj = wc1.registry.getObject(obj.wsbSerialNumber);
 
-        ws.processConnections();
-        wc1.processConnections();
+          // should reuse the reference object
+          assert.strictEqual(oldRemoteReference, remoteObj.topReference);
+
+          // should allow passing objects like this as default rpc arguments
+          obj.rpcTest(obj);
+
+          ws.processConnections();
+          wc1.processConnections();
+      });
     });
 
     it('calls RPCs from servers to clients on an associated netobject', function () {
