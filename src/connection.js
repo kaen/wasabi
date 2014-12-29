@@ -20,6 +20,7 @@ var WSB_SECTION_GHOSTS = --iota;
 var WSB_SECTION_REMOVED_GHOSTS = --iota;
 var WSB_SECTION_UPDATES = --iota;
 var WSB_SECTION_RPCS = --iota;
+var WSB_SECTION_INFO = --iota;
 var WSB_PACKET_STOP = --iota;
 
 /**
@@ -63,6 +64,8 @@ function Connection(instance, socket, ghostFrom, ghostTo, scopeCallback) {
     this._visibleObjects = {};
 
     this._updateHashes = {};
+
+    this._index = 0;
 
     // configure socket to dump received data into the receive bitstream
     // currently assumes that it receives a socket.io socket
@@ -202,6 +205,26 @@ Connection.prototype._unpackGhost = function (bs) {
     return obj;
 };
 
+/**
+ * Pack info about the packet itself
+ * @method _packInfo
+ * @private
+ * @param {Bitstream} bs The target Bitstream
+ */
+Connection.prototype._packInfo = function (bs) {
+    bs.writeUInt(this._index, 16);
+    this._index = (this._index + 1) & 0xFFFF;
+};
+
+/**
+ * Unpack the info about the packet itself
+ * @method _unpackInfo
+ * @private
+ * @param {Bitstream} bs The source Bitstream
+ */
+Connection.prototype._unpackInfo = function (bs) {
+    bs.readUInt(16);
+};
 
 /**
  * Pack the given list of object update data into bs
@@ -489,6 +512,7 @@ Connection.prototype.process = function () {
     var rpcStream;
     var ghostStream;
     var ghostRemovalStream;
+    var infoStream;
     var subobjects;
 
     // connections with ghostTo set (i.e. clients)
@@ -528,6 +552,9 @@ Connection.prototype.process = function () {
         updateStream = new Bitstream();
         rpcStream = new Bitstream();
         ghostRemovalStream = new Bitstream();
+        infoStream = new Bitstream();
+
+        this._packInfo(infoStream);
 
         // pack RPC invocations, put discovered subobjects into the
         // newObjects list to ensure that a ghost is available
@@ -586,6 +613,9 @@ Connection.prototype.process = function () {
 
         // pack ghost removals for newly invisible objects
         this._packRemovedGhosts(newlyInvisibleObjects, ghostRemovalStream);
+
+        this._sendBitstream.writeUInt(WSB_SECTION_INFO, 16);
+        this._sendBitstream.append(infoStream);
 
         this._sendBitstream.writeUInt(WSB_SECTION_GHOSTS, 16);
         this._sendBitstream.append(ghostStream);
@@ -693,5 +723,7 @@ Connection._sectionMap[WSB_SECTION_GHOSTS] = Connection.prototype._unpackGhosts;
 Connection._sectionMap[WSB_SECTION_REMOVED_GHOSTS] = Connection.prototype._unpackRemovedGhosts;
 Connection._sectionMap[WSB_SECTION_UPDATES] = Connection.prototype._unpackUpdates;
 Connection._sectionMap[WSB_SECTION_RPCS] = Connection.prototype._unpackRpcs;
+Connection._sectionMap[WSB_SECTION_INFO] = Connection.prototype._unpackInfo;
+
 
 module.exports = Connection;
