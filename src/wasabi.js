@@ -224,15 +224,20 @@ function makeWasabi() {
             delete this._groups[group._id];
         },
         /**
-         * Put Wasabi in to debug mode. This wraps protocol and transport
-         * level functions in debug wrappers to print packet information on
-         * the console
-         * @method debug
+         * Put Wasabi in to debug mode. This wraps protocol, object, and
+         * bitstream level functions in debug wrappers to print packet
+         * information on the console
+         * @method debugMode
          */
         debugMode: function() {
+            /*
+             * This works by traversing and monkey-patching a few classes to
+             * wrap relevant functions with instrumentation to format and
+             * print information. We use some IIFE magic to give each stub a
+             * "sealed" reference to k and the "real" function being wrapped.
+             */
             for(var k in Connection.prototype) {
                 if(k.indexOf('pack') >= 0) {
-                    // using an IIFE to seal the reference to k
                     (function(k, f) {
                         Connection.prototype[k] = function() {
                             dbg.push(k);
@@ -242,6 +247,12 @@ function makeWasabi() {
                         }
                     })(k, Connection.prototype[k]);
                 }
+            }
+
+            var f = Connection.prototype.process;
+            Connection.prototype.process = function() {
+                dbg.print("\n");
+                return f.apply(this, arguments);
             }
 
             for(var k in InDescription.prototype) {
