@@ -21,8 +21,10 @@ The main advantages of using Wasabi are:
  - Reliable construction: A well-rounded test suite with [100% branch coverage](http://kaen.github.io/wasabi/cov/lcov-report/)
 
 # Usage
-
-For further reading, make sure to look at the [Guide](http://kaen.github.io/wasabi/) or the [API Docs on GitHub](http://kaen.github.io/wasabi/doc/), or build your own locally with `jake doc`.
+For further reading, make sure to look at the
+[Guide](http://kaen.github.io/wasabi/) or the [API Docs on
+GitHub](http://kaen.github.io/wasabi/doc/), or build your own locally with
+`jake doc`.
 
 # Contact
 If you have bug reports, feature requests, questions, or pull requests, drop by
