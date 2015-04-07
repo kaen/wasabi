@@ -109,7 +109,7 @@ InDescription.prototype = {
      *     the sign bit
      * @method rangedFloat
      */
-    rangedFloat: function(name, min, max, bits) {
+    rangedFloat: function (name, min, max, bits) {
         var clampedValue = Math.max(Math.min(this._target[name], max), min);
         this._bitStream.writeFloat((clampedValue - min) / (max - min), bits);
     },
@@ -183,7 +183,7 @@ InDescription.prototype = {
     reference: function (name) {
         // Just write the serial number
         var serial = this._target[name].wsbSerialNumber;
-        if(serial === undefined) {
+        if (serial === undefined) {
             this._target.wsbInstance.addObject(this._target[name]);
             serial = this._target[name].wsbSerialNumber;
         }

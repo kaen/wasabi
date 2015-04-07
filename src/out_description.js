@@ -58,7 +58,7 @@ OutDescription.prototype = {
         this._target[name] = this._bitStream.readFloat(bits);
     },
 
-    rangedFloat: function(name, min, max, bits) {
+    rangedFloat: function (name, min, max, bits) {
         this._target[name] = this._bitStream.readFloat(bits) * (max - min) + min;
     },
 

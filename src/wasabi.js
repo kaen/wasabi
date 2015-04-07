@@ -223,83 +223,16 @@ function makeWasabi() {
             // release group from the master group list
             delete this._groups[group._id];
         },
+        /* Debug mode helpers */
+
         /**
          * Put Wasabi in to debug mode. This wraps protocol, object, and
          * bitstream level functions in debug wrappers to print packet
          * information on the console
          * @method debugMode
          */
-        debugMode: function() {
-            /*
-             * This works by traversing and monkey-patching a few classes to
-             * wrap relevant functions with instrumentation to format and
-             * print information. We use some IIFE magic to give each stub a
-             * "sealed" reference to k and the "real" function being wrapped.
-             */
-            for(var k in Connection.prototype) {
-                if(k.indexOf('pack') >= 0) {
-                    (function(k, f) {
-                        Connection.prototype[k] = function() {
-                            dbg.push(k);
-                            f.apply(this, arguments);
-                            dbg.pop();
-                            
-                        }
-                    })(k, Connection.prototype[k]);
-                }
-            }
-
-            var f = Connection.prototype.process;
-            Connection.prototype.process = function() {
-                dbg.print("\n");
-                return f.apply(this, arguments);
-            }
-
-            for(var k in InDescription.prototype) {
-                if(typeof InDescription.prototype[k] === 'function') {
-                    // using an IIFE to seal the reference to k
-                    (function(k, f) {
-                        InDescription.prototype[k] = function() {
-                            dbg.push(k + ' ' + arguments[0]);
-                            f.apply(this, arguments);
-                            dbg.pop();
-                        }
-                    })(k, InDescription.prototype[k]);
-                }
-            }
-
-            for(var k in OutDescription.prototype) {
-                if(typeof OutDescription.prototype[k] === 'function') {
-                    // using an IIFE to seal the reference to k
-                    (function(k, f) {
-                        OutDescription.prototype[k] = function() {
-                            dbg.push(k + ' ' + arguments[0]);
-                            f.apply(this, arguments);
-                            dbg.pop();
-                        }
-                    })(k, OutDescription.prototype[k]);
-                }
-            }
-
-            for(var k in Bitstream.prototype) {
-                if(k.indexOf('write') >= 0) {
-                    (function(k, f) {
-                        Bitstream.prototype[k] = function() {
-                            dbg.print(k + ': ' + arguments[0].toString());
-                            f.apply(this, arguments);
-                        }
-                    })(k, Bitstream.prototype[k]);
-                }
-                if(k.indexOf('read') >= 0) {
-                    (function(k, f) {
-                        Bitstream.prototype[k] = function() {
-                            var result = f.apply(this, arguments);
-                            dbg.print(k + ': ' + result.toString());
-                            return result;
-                        }
-                    })(k, Bitstream.prototype[k]);
-                }
-            }
+        debugMode: function () {
+            dbg.debugMode();
         },
 
         /**
