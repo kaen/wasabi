@@ -9,7 +9,7 @@ module.exports = (function () {
         this.stringfoo = 'test';
         this.truefoo = true;
         this.falsefoo = false;
-        this.rangedfoo = 77.143;
+        this.rangedfoo = 3.9;
     }
 
     Foo.prototype = {
@@ -21,7 +21,7 @@ module.exports = (function () {
             desc.string('stringfoo');
             desc.bool('truefoo');
             desc.bool('falsefoo');
-            desc.rangedFloat('rangedfoo', -100, 100, 16);
+            desc.rangedFloat('rangedfoo', -2 * Math.PI, 2 * Math.PI, 32);
         },
         check: function (that) {
             assert.strictEqual(this.uintfoo, that.uintfoo);

@@ -18,6 +18,7 @@ var InDescription = function (bs, target, serialize) {
 
     // hash of objects found while encoding the current object
     this._discoveredObjects = {};
+    this.in = true;
 };
 
 InDescription.prototype = {

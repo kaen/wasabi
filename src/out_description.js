@@ -16,6 +16,7 @@ var OutDescription = function (bs, target, serialize, instance) {
     this._target = target;
     this._serialize = serialize;
     this._instance = instance;
+    this.out = true;
 };
 
 OutDescription.prototype = {
