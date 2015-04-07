@@ -83,7 +83,10 @@ OutDescription.prototype = {
     },
 
     reference: function (name) {
-        this._target[name] = this._instance.registry.getObject(this._bitStream.readUInt(16));
+        var serial = this._bitStream.readUInt(16);
+        if (serial !== 0xFF00) {
+            this._target[name] = this._instance.registry.getObject(serial);
+        }
     },
 
     any: function (name, bits) {

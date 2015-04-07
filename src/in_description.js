@@ -183,13 +183,20 @@ InDescription.prototype = {
      */
     reference: function (name) {
         // Just write the serial number
-        var serial = this._target[name].wsbSerialNumber;
+        var serial;
+
+        if (this._target[name]) {
+            serial = this._target[name].wsbSerialNumber;
+            this._discoveredObjects[serial] = this._target[name];
+        } else {
+            serial = 0xFF00;
+        }
+
         if (serial === undefined) {
             this._target.wsbInstance.addObject(this._target[name]);
             serial = this._target[name].wsbSerialNumber;
         }
         this._bitStream.writeUInt(serial, 16);
-        this._discoveredObjects[serial] = this._target[name];
     },
 
     /**

@@ -259,6 +259,7 @@ describe('Wasabi', function () {
             SubreferenceEncodingTestClass.prototype.serialize = function (desc) {
                 desc.reference('fooReference1');
                 desc.reference('fooReference2');
+                desc.reference('nullReference');
             };
 
             /**
@@ -317,8 +318,6 @@ describe('Wasabi', function () {
             obj.topReference.fooReference1.check(remoteObj.topReference.fooReference1);
             assert.strictEqual(obj.topReference.fooReference1.wsbSerialNumber, remoteObj.topReference.fooReference1.wsbSerialNumber);
             assert.notEqual(obj.topReference.fooReference1.wsbSerialNumber, undefined);
-
-            console.log(remoteObj.topReference.fooReference1);
 
             oldRemoteReference = remoteObj.topReference;
 
