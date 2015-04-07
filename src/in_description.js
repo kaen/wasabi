@@ -187,7 +187,6 @@ InDescription.prototype = {
 
         if (this._target[name]) {
             serial = this._target[name].wsbSerialNumber;
-            this._discoveredObjects[serial] = this._target[name];
         } else {
             serial = 0xFF00;
         }
@@ -196,7 +195,12 @@ InDescription.prototype = {
             this._target.wsbInstance.addObject(this._target[name]);
             serial = this._target[name].wsbSerialNumber;
         }
+
         this._bitStream.writeUInt(serial, 16);
+
+        if (this._target[name]) {
+            this._discoveredObjects[serial] = this._target[name];
+        }
     },
 
     /**
