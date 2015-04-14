@@ -655,6 +655,22 @@ describe('Wasabi', function () {
 
     });
 
+    it('correctly removes items from replicated arrays', function () {
+        ws.addObject(foo1)
+
+        ws.processConnections();
+        wc1.processConnections();
+
+        remoteFoo = wc1.registry.getObject(foo1.wsbSerialNumber);
+        assert.deepEqual(foo1.arrayfoo, remoteFoo.arrayfoo)
+
+        foo1.arrayfoo.splice(0, 1)
+
+        ws.processConnections();
+        wc1.processConnections();
+        assert.deepEqual(remoteFoo.arrayfoo, foo1.arrayfoo)
+    });
+
     it('serializes arrays', function () {
         var arr = [1, true, false, -123, 'test', {
                 foo: 'bar',

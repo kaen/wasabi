@@ -22,7 +22,7 @@ var OutDescription = function (bs, target, serialize, instance) {
 OutDescription.prototype = {
     array: function (name, type, arg1, arg2) {
         var typeFn;
-        var arr = this._target[name] || [];
+        var arr = []; // new array every time to save us from tracking removals
         var serialize;
         arg1 = arg1 || 16;
 

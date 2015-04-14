@@ -10,6 +10,7 @@ module.exports = (function () {
         this.truefoo = true;
         this.falsefoo = false;
         this.rangedfoo = 3.9;
+        this.arrayfoo = ['foo', 'bar', 1, 2];
     }
 
     Foo.prototype = {
@@ -22,6 +23,7 @@ module.exports = (function () {
             desc.bool('truefoo');
             desc.bool('falsefoo');
             desc.rangedFloat('rangedfoo', -2 * Math.PI, 2 * Math.PI, 32);
+            desc.array('arrayfoo');
         },
         check: function (that) {
             assert.strictEqual(this.uintfoo, that.uintfoo);
@@ -31,6 +33,7 @@ module.exports = (function () {
             assert.strictEqual(this.truefoo, that.truefoo);
             assert.strictEqual(this.falsefoo, that.falsefoo);
             assert.closeTo(this.rangedfoo, that.rangedfoo, 0.01);
+            assert.deepEqual(this.arrayfoo, that.arrayfoo);
         },
         rpcTest: function rpcTest(val) {
             this.testval = val;
