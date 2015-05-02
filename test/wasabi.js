@@ -1074,4 +1074,32 @@ describe('Wasabi', function () {
         assert.notOk(ws.registry.getObject(foo1.wsbSerialNumber));
         assert.notOk(group._objects[foo1.wsbSerialNumber]);
     });
+
+    it('sends the initial update only on the first frame', function () {
+        var remoteFoo;
+        ws.addObject(foo1);
+
+        // gets updated the first frame
+        foo1.oncefoo = 1337;
+        ws.processConnections();
+        wc1.processConnections();
+        remoteFoo = wc1._getAllObjects()[foo1.wsbSerialNumber];
+        assert.equal(remoteFoo.oncefoo, 1337);
+
+        // but not the second
+        foo1.oncefoo = 1338;
+        ws.processConnections();
+        wc1.processConnections();
+        assert.equal(remoteFoo.oncefoo, 1337);
+
+        // after removing and re-adding, it is updated once more
+        ws.removeObject(foo1);
+        ws.processConnections();
+        wc1.processConnections();
+        ws.addObject(foo1);
+        ws.processConnections();
+        wc1.processConnections();
+        remoteFoo = wc1._getAllObjects()[foo1.wsbSerialNumber];
+        assert.equal(remoteFoo.oncefoo, 1338);
+    });
 });

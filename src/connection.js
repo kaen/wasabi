@@ -180,6 +180,10 @@ Connection.prototype._unpackGhosts = function (bs) {
 Connection.prototype._packGhost = function (obj, bs) {
     bs.writeUInt(this._instance.registry.hash(obj.constructor), 16);
     bs.writeUInt(obj.wsbSerialNumber, 16);
+
+    if (typeof obj.initialize === 'function') {
+        bs.pack(obj, obj.initialize, {});
+    }
 };
 
 /**
@@ -202,6 +206,10 @@ Connection.prototype._unpackGhost = function (bs) {
     obj.wsbIsGhost = true;
     obj.wsbJustGhosted = true;
     this._instance.registry.addObject(obj, serial);
+
+    if (typeof obj.initialize === 'function') {
+        bs.unpack(obj, obj.initialize, {});
+    }
     return obj;
 };
 

@@ -11,6 +11,8 @@ module.exports = (function () {
         this.falsefoo = false;
         this.rangedfoo = 3.9;
         this.arrayfoo = ['foo', 'bar', 1, 2];
+
+        this.oncefoo = 1;
     }
 
     Foo.prototype = {
@@ -24,6 +26,9 @@ module.exports = (function () {
             desc.bool('falsefoo');
             desc.rangedFloat('rangedfoo', -2 * Math.PI, 2 * Math.PI, 32);
             desc.array('arrayfoo');
+        },
+        initialize: function (desc) {
+            desc.uint('oncefoo', 16);
         },
         check: function (that) {
             assert.strictEqual(this.uintfoo, that.uintfoo);

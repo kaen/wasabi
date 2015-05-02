@@ -27,3 +27,17 @@ Player.prototype.serialize = function (desc) {
 {% endhighlight %}
 
 The `serialize` method is passed a single argument, which is a `Description` object, typically referred to as `desc`. Calling methods on this object controls the name, type, and size in bits of the properties to send.
+
+Initialize
+===
+
+Additionally, objects can define an `initialize` method, which behaves identically to a `serialize` method, but is only invoked when a new ghost is created (therefore, can be used to transmit attributes that should be *initialized*, but not sent for every frame).
+
+{% highlight javascript %}
+Player.prototype.initialize = function (desc) {
+	// something big and never updated:
+    desc.string('biography');
+}
+{% endhighlight %}
+
+**NOTE:** Currently, using `desc.reference` in an `initialize` function yields undefined behavior.
