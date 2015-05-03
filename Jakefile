@@ -71,7 +71,8 @@ task('test', function () {
     coverage.hookRequire();
 
     srcFiles.forEach(function(name) {
-        coverage.addInstrumentCandidate(name);
+        if(name.indexOf('debug') < 0)
+            coverage.addInstrumentCandidate(name);
     });
 
     testFiles.forEach(function(name) {
