@@ -286,6 +286,7 @@ describe('Wasabi', function () {
             };
 
             ReferenceEncodingTestClass.prototype.rpcDummy = function (obj) {
+                return obj;
             };
 
             // add our one-off test classes

@@ -497,7 +497,9 @@ Bitstream.prototype = {
         // We'll walk the prototype chain looking for .serialize methods,
         // and call them in order from child-most to parent-most
         var serialize = desc._serialize || desc._target.serialize;
-        serialize && serialize.call(desc._target, desc);
+        if (typeof serialize === 'function') {
+            serialize.call(desc._target, desc);
+        }
     },
 
     /**
