@@ -595,7 +595,7 @@ describe('Wasabi', function () {
         assert.ok(destroyDone);
     });
 
-    it('handles prototypal inheritance', function () {
+    it('supports prototypal inheritance', function () {
         var bar = new MockWasabi.Bar();
 
         ws.addObject(bar);

@@ -64,6 +64,7 @@ module.exports = (function () {
     Bar.prototype = new Foo();
     Bar.prototype.constructor = Bar;
     Bar.prototype.serialize = function (desc) {
+        Foo.prototype.serialize.call(this, desc);
         desc.uint('barbar', 16);
     };
 

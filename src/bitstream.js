@@ -496,23 +496,8 @@ Bitstream.prototype = {
     _serialize: function (desc) {
         // We'll walk the prototype chain looking for .serialize methods,
         // and call them in order from child-most to parent-most
-        var proto = Object.getPrototypeOf(desc._target);
         var serialize = desc._serialize || desc._target.serialize;
-        while (serialize && (typeof serialize === 'function')) {
-
-            // pass desc to the given serialize function
-            serialize.call(desc._target, desc);
-
-            // if a description has an explicit serialize function, don't climb
-            // the prototype chain
-            if (desc._serialize) {
-                break;
-            }
-
-            // look for the next serialize method up the chain
-            proto = Object.getPrototypeOf(proto);
-            serialize = proto ? proto.serialize : false;
-        }
+        serialize && serialize.call(desc._target, desc);
     },
 
     /**
