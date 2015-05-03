@@ -35,6 +35,12 @@ Debug.prototype = {
             return result;
         };
     },
+    /**
+     * Put Wasabi in to debug mode. This wraps protocol, object, and
+     * bitstream level functions in debug wrappers to print packet
+     * information on the console
+     * @method debugMode
+     */
     debugMode: function () {
         var that = this;
         var k;

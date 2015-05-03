@@ -223,17 +223,6 @@ function makeWasabi() {
             // release group from the master group list
             delete this._groups[group._id];
         },
-        /* Debug mode helpers */
-
-        /**
-         * Put Wasabi in to debug mode. This wraps protocol, object, and
-         * bitstream level functions in debug wrappers to print packet
-         * information on the console
-         * @method debugMode
-         */
-        debugMode: function () {
-            dbg.debugMode();
-        },
 
         /**
          * Pack an RPC invocation to the appropriate connections
