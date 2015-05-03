@@ -19,21 +19,21 @@ describe('Bitstream', function () {
 
     it('sets n bits at a time', function () {
         var b = new Bitstream();
-        b._setBits(0, 7, 127);
-        assert.equal(b.arr[0], 127);
+        b._setBits(0, 8, 128);
+        assert.equal(b.arr[0], 128);
     });
 
     it('correctly overflows large values', function () {
         var b = new Bitstream();
-        b._setBits(0, 8, 129);
+        b._setBits(0, 9, 257);
         assert.equal(b.arr[0], 1);
         assert.equal(b.arr[1], 1);
     });
 
     it('gets n bits at a time', function () {
         var b = new Bitstream();
-        b._setBits(0, 16, 1337);
-        assert.equal(b._getBits(0, 16), 1337);
+        b._setBits(0, 16, 1338);
+        assert.equal(b._getBits(0, 16), 1338);
     });
 
     it('calculates hashes of bits', function () {
@@ -51,7 +51,7 @@ describe('Bitstream', function () {
 
     it('reads/writes unsigned integers', function () {
         var b = new Bitstream();
-        var VALUE = 1337;
+        var VALUE = 1338;
         b.writeUInt(VALUE, 16);
         assert.equal(b._index, 16);
 
@@ -65,7 +65,7 @@ describe('Bitstream', function () {
 
     it('reads/writes signed integers', function () {
         var b = new Bitstream();
-        var negValue = -1337;
+        var negValue = -1338;
         var posValue = 123;
         b.writeSInt(negValue, 16);
         b.writeSInt(posValue, 8);
@@ -96,7 +96,7 @@ describe('Bitstream', function () {
 
     it('complains on overread', function () {
         var b = new Bitstream();
-        b.writeUInt(1337, 16);
+        b.writeUInt(1338, 16);
         b._index = 0;
         b.readUInt(16);
         assert.throws(function () {
@@ -106,16 +106,16 @@ describe('Bitstream', function () {
 
     it('encodes its value as an ArrayBuffer', function () {
         var b = new Bitstream();
-        b.writeUInt(1337, 16);
+        b.writeUInt(1338, 16);
         b.writeUInt(1, 2);
-        b.writeUInt(127, 7);
+        b.writeUInt(128, 8);
 
         var b2 = new Bitstream(b.toArrayBuffer());
         b2._index = 0;
 
-        assert.equal(1337, b2.readUInt(16));
+        assert.equal(1338, b2.readUInt(16));
         assert.equal(1, b2.readUInt(2));
-        assert.equal(127, b2.readUInt(7));
+        assert.equal(128, b2.readUInt(8));
     });
 
     it('should pack/unpack objects with .serialize methods', function () {
@@ -123,13 +123,13 @@ describe('Bitstream', function () {
         var bs = new Bitstream();
         var resultObj;
         var testObj = {
-            foo: 1337,
-            bar: 7331,
+            foo: 1338,
+            bar: 8331,
             baz: -123,
             serialize: function (desc) {
                 desc.uint('foo', 16);
                 desc.uint('bar', 16);
-                desc.sint('baz', 7);
+                desc.sint('baz', 8);
             }
         };
         bs.pack(testObj);
@@ -146,20 +146,20 @@ describe('Bitstream', function () {
     it('appends bits from character data', function () {
         var b1 = new Bitstream();
         var b2 = new Bitstream();
-        b1.writeUInt(1337, 16);
+        b1.writeUInt(1338, 16);
         b1.writeUInt(4321, 16);
         b2.appendChars(b1.toChars());
 
         b2._index = 0;
 
-        assert.equal(1337, b2.readUInt(16));
+        assert.equal(1338, b2.readUInt(16));
         assert.equal(4321, b2.readUInt(16));
     });
 
     it('appends bits directly from another bitstream', function () {
         var b1 = new Bitstream();
         var b2 = new Bitstream();
-        b1.writeUInt(1337, 16);
+        b1.writeUInt(1338, 16);
         b1.writeUInt(4321, 16);
 
         b2.writeUInt(1234, 16);
@@ -172,7 +172,7 @@ describe('Bitstream', function () {
         // append will pad the existing data to a cell boundary, so we must align
         // in order to keep reading
         b2.align();
-        assert.equal(1337, b2.readUInt(16));
+        assert.equal(1338, b2.readUInt(16));
         assert.equal(4321, b2.readUInt(16));
 
         // append will also pad the appended data to a cell boundary, so align
@@ -185,13 +185,13 @@ describe('Bitstream', function () {
         var b1 = new Bitstream();
         var start;
         // this should actually be UTF-8 encoded binary, but whatever
-        // 4 characters == 28 bits of binary data
+        // 4 characters == 32 bits of binary data
         b1.appendChars("test");
         b1._index = 0;
 
-        // read seven bits, this should land us squarely on the next
+        // read eight bits, this should land us squarely on the next
         // cell. A call to .align() should not move the head
-        b1.readUInt(7);
+        b1.readUInt(8);
         start = b1._index;
         b1.align();
         assert.equal(start, b1._index);
@@ -199,10 +199,10 @@ describe('Bitstream', function () {
         // reading one bit further should make the next call advance the index to the next cell
         b1.readUInt(1);
         b1.align();
-        assert.equal(start + 7, b1._index);
+        assert.equal(start + 8, b1._index);
 
-        // having consumed 14 bits, consuming the remaining 14 should not through an error
-        b1.readUInt(14);
+        // having consumed 16 bits, consuming the remaining 16 should not throw an error
+        b1.readUInt(16);
 
         assert.equal(b1._index, b1._nbits);
     });
@@ -210,9 +210,9 @@ describe('Bitstream', function () {
     it('checks for equivalence with another', function () {
         var b1 = new Bitstream();
         var b2 = new Bitstream();
-        b1.writeUInt(1337, 16);
+        b1.writeUInt(1338, 16);
         b1.writeUInt(4321, 16);
-        b2.writeUInt(1337, 16);
+        b2.writeUInt(1338, 16);
         b2.writeUInt(4321, 16);
 
         assert.ok(b1.equals(b2));
@@ -267,15 +267,15 @@ describe('Bitstream', function () {
         var sourceStream = new Bitstream();
         var destStream;
 
-        sourceObj.foo = 1337;
-        sourceObj.bar = 7331;
+        sourceObj.foo = 1338;
+        sourceObj.bar = 8331;
 
         sourceStream.pack(sourceObj);
 
         var server = new WebSocket.Server({
-            port: 31337
+            port: 31338
         }, function () {
-            var client = new WebSocket('ws://localhost:31337');
+            var client = new WebSocket('ws://localhost:31338');
             client.on('message', function (data) {
                 destStream = Bitstream.fromChars(data);
                 destStream._index = 0;

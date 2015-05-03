@@ -7,7 +7,7 @@ var OutDescription = require('./out_description');
  * Manages the packing/unpacking of values as a set number of bits
  * @class Bitstream
  * @constructor
- * @param {Array} buffer an array of 7-bit integers representing the intial
+ * @param {Array} buffer an array of 8-bit integers representing the intial
  * data for this Bitstream
  */
 
@@ -71,11 +71,11 @@ Bitstream.prototype = {
      * @method align
      */
     align: function () {
-        var delta = this._index % 7;
+        var delta = this._index % 8;
         if (delta === 0) {
             return;
         }
-        this._advance(7 - delta);
+        this._advance(8 - delta);
     },
 
     /**
@@ -137,7 +137,7 @@ Bitstream.prototype = {
      * @method trim
      */
     trim: function () {
-        var cell = Math.ceil(this._nbits / 7);
+        var cell = Math.ceil(this._nbits / 8);
         this.arr.splice(cell, this.arr.length - cell);
     },
 
@@ -157,12 +157,12 @@ Bitstream.prototype = {
         var cellOffset;
         var mask;
         var nbits;
-        cell = Math.floor(offset / 7);
-        cellOffset = offset % 7;
+        cell = Math.floor(offset / 8);
+        cellOffset = offset % 8;
 
         while (n > 0) {
             // determine how many bits will fit into the current cell
-            nbits = Math.min(n, 7 - cellOffset);
+            nbits = Math.min(n, 8 - cellOffset);
 
             // make an all-set bitmask with length of nbits
             mask = (1 << nbits) - 1;
@@ -201,14 +201,14 @@ Bitstream.prototype = {
         var nbits;
         var value;
         var valueOffset;
-        cell = Math.floor(offset / 7);
-        cellOffset = offset % 7;
+        cell = Math.floor(offset / 8);
+        cellOffset = offset % 8;
         value = 0;
         valueOffset = 0;
 
         while (n > 0) {
             // determine how many bits can be retrieved from this cell
-            nbits = Math.min(n, 7 - cellOffset);
+            nbits = Math.min(n, 8 - cellOffset);
 
             // make an all-set bitmask with length of nbits
             mask = (1 << nbits) - 1;
@@ -269,7 +269,7 @@ Bitstream.prototype = {
 
         // pad the contents to the end of the current cell
         this.arr = this.arr.concat(bs.arr);
-        this._nbits = this.arr.length * 7;
+        this._nbits = this.arr.length * 8;
         this._index = this._nbits;
     },
 
@@ -283,7 +283,7 @@ Bitstream.prototype = {
         for (i = 0; i < buffer.length; i++) {
             this.arr.push(buffer[i]);
         }
-        this._extend(i * 7);
+        this._extend(i * 8);
     },
 
     /**
