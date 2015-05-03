@@ -285,6 +285,9 @@ describe('Wasabi', function () {
                 done();
             };
 
+            ReferenceEncodingTestClass.prototype.rpcDummy = function (obj) {
+            };
+
             // add our one-off test classes
             ws.addClass(ReferenceEncodingTestClass);
             wc1.addClass(ReferenceEncodingTestClass);
@@ -295,6 +298,7 @@ describe('Wasabi', function () {
             obj = new ReferenceEncodingTestClass();
             obj.init();
             ws.addObject(obj);
+            obj.rpcDummy(obj.topReference);
 
             // set visibility groups so that the ReferenceEncodingTestClass and Foo
             // objects is ghosted but, the SubreferenceEncodingTestClass instance
