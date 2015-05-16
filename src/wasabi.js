@@ -49,9 +49,11 @@ function makeWasabi() {
          * this class through a Connection
          * @method addClass
          * @param {Function} klass The constructor of the class to add
+         * @param {String} name The unique name of this class, useful when the
+         *    constructor function is anonymous e.g. when using Coffeescript
          */
-        addClass: function (klass) {
-            this.registry.addClass(klass, this);
+        addClass: function (klass, name) {
+            this.registry.addClass(klass, this, name);
         },
 
         /**

@@ -96,18 +96,19 @@ Registry.prototype = {
      * @method addClass
      * @param {Function} klass The constructor of the class to add
      * @param {Wasabi} instance The Wasabi instance to invoke the RPC through
+     * @param {String} _name The unique name of this class, useful when the
+     *    constructor function is anonymous e.g. when using Coffeescript
      */
-    addClass: function (klass, instance) {
+    addClass: function (klass, instance, _name) {
         var k;
         var fn;
         var keyOfRealFunction;
         var hash;
         var args;
-        var name = _parseFunctionName(klass);
+        var name = _name || _parseFunctionName(klass);
 
-        // wasabi requires the `name` property to be set and valid
         if (typeof name !== 'string' || name.length < 1) {
-            throw new WasabiError('Attempt to add anonymous class. Give it a name with "function NAME () { ... }"');
+            throw new WasabiError('Attempt to add anonymous class. Pass in a name as the second argument to addClass"');
         }
 
         hash = this.hash(klass);
