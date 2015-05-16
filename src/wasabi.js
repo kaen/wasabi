@@ -17,6 +17,8 @@ var events = require('events');
  * @static
  */
 
+var _instance = null;
+
 function makeWasabi() {
 
     /**
@@ -322,9 +324,21 @@ function makeWasabi() {
         }
     }
 
-    return Wasabi;
+    function injector() {
+        return _instance;
+    }
+
+    injector.create = function () {
+        _instance = makeWasabi();
+    };
+
+    for (k in Wasabi) {
+        if (Wasabi.hasOwnProperty(k)) {
+            injector[k] = Wasabi[k];
+        }
+    }
+
+    return injector;
 }
 
-var Wasabi = makeWasabi();
-
-module.exports = Wasabi;
+module.exports = makeWasabi();
